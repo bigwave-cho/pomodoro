@@ -10,14 +10,27 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int totlaSeconds = 1500;
+  // 시간을 확실하게 상수로 정해주기
+  static const twendtyFiveMinutes = 1500;
+  int totalSeconds = twendtyFiveMinutes;
   bool isRunning = false;
+  int totalPomodoros = 0;
   late Timer timer;
 
   void onTick(Timer timer) {
-    setState(() {
-      totlaSeconds--;
-    });
+    if (totalSeconds == 0) {
+      setState(() {
+        totalPomodoros++;
+        isRunning = false;
+        totalSeconds = twendtyFiveMinutes;
+      });
+      // timer.cancel로 timer를 초기화하지 않으면 중첩되버림.
+      timer.cancel();
+    } else {
+      setState(() {
+        totalSeconds--;
+      });
+    }
   }
 
   void onStartPressed() {
@@ -37,6 +50,15 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  //시간 단위 변환
+  String format(int seconds) {
+    var duration = Duration(seconds: seconds);
+    //print(duration) : 0:25:00.00000 분초만 남기기.
+    // substring   JS의 slice
+    print(duration.toString().split(".")[0].substring(2, 7));
+    return duration.toString().split(".")[0].substring(2, 7);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Container(
               alignment: Alignment.bottomCenter,
               child: Text(
-                '$totlaSeconds',
+                format(totalSeconds),
                 style: TextStyle(
                   color: Theme.of(context).cardColor,
                   fontSize: 89,
@@ -94,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         Text(
-                          '0',
+                          '$totalPomodoros',
                           style: TextStyle(
                             fontSize: 58,
                             color: Theme.of(context).textTheme.headline1!.color,
