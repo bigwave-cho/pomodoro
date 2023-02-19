@@ -10,7 +10,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // 시간을 확실하게 상수로 정해주기
   static const twendtyFiveMinutes = 1500;
   int totalSeconds = twendtyFiveMinutes;
   bool isRunning = false;
@@ -24,7 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
         isRunning = false;
         totalSeconds = twendtyFiveMinutes;
       });
-      // timer.cancel로 timer를 초기화하지 않으면 중첩되버림.
       timer.cancel();
     } else {
       setState(() {
@@ -50,12 +48,15 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  //시간 단위 변환
+  void onResetPressed() {
+    setState(() {
+      totalSeconds = twendtyFiveMinutes;
+    });
+  }
+
   String format(int seconds) {
     var duration = Duration(seconds: seconds);
-    //print(duration) : 0:25:00.00000 분초만 남기기.
-    // substring   JS의 slice
-    print(duration.toString().split(".")[0].substring(2, 7));
+
     return duration.toString().split(".")[0].substring(2, 7);
   }
 
@@ -81,17 +82,30 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Flexible(
             flex: 2,
-            child: Center(
-              child: IconButton(
-                iconSize: 120,
-                color: Theme.of(context).cardColor,
-                onPressed: isRunning ? onPausedPressed : onStartPressed,
-                icon: Icon(
-                  isRunning
-                      ? Icons.pause_circle_outline
-                      : Icons.play_circle_outlined,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: IconButton(
+                    iconSize: 120,
+                    color: Theme.of(context).cardColor,
+                    onPressed: isRunning ? onPausedPressed : onStartPressed,
+                    icon: Icon(
+                      isRunning
+                          ? Icons.pause_circle_outline
+                          : Icons.play_circle_outlined,
+                    ),
+                  ),
                 ),
-              ),
+                Center(
+                  child: IconButton(
+                    iconSize: 90,
+                    color: Theme.of(context).cardColor,
+                    onPressed: isRunning ? onResetPressed : () {},
+                    icon: const Icon(Icons.restore_rounded),
+                  ),
+                ),
+              ],
             ),
           ),
           Flexible(
